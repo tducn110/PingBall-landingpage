@@ -4,7 +4,7 @@ import { FooterInfo } from "./footer/FooterInfo";
 export function Footer() {
   return (
     <footer className="bg-slate-950 border-t border-slate-800/60 py-12">
-      <div className="max-w-6xl mx-auto pl-2 pr-4">
+      <div className="pl-4 pr-6">
         <div className="flex flex-col md:flex-row items-center md:items-center md:justify-between gap-8">
           <FooterBrand />
           <div className="flex-1 flex justify-center">
