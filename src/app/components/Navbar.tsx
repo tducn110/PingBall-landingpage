@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
+import { useState } from "react";
+import { motion } from "motion/react";
 
 import { GOOGLE_FORM_URL } from "../constants";
 import vnukLogo from "../../imports/VNUK + ĐHĐN COLOR.png";
@@ -12,28 +12,11 @@ const NAV_LINKS = [
 ];
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { scrollY } = useScroll();
-  const bgOpacity = useTransform(scrollY, [0, 80], [0, 1]);
-
-  useEffect(() => {
-    const unsub = scrollY.on("change", (v) => setScrolled(v > 40));
-    return unsub;
-  }, [scrollY]);
 
   return (
-    <motion.nav
-      className="fixed top-0 left-0 right-0 z-50"
-      style={{ "--bg-opacity": bgOpacity } as React.CSSProperties}
-    >
-      {/* Animated background */}
-      <motion.div
-        className="absolute inset-0 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm"
-        style={{ opacity: bgOpacity }}
-      />
-
-      <div className="relative max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <a href="#" className="flex-shrink-0">
           <img
@@ -49,11 +32,7 @@ export function Navbar() {
             <a
               key={l.href}
               href={l.href}
-              className={`px-4 py-2 rounded-lg transition-all text-sm font-medium ${
-                scrolled
-                  ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                  : "text-slate-300 hover:text-white hover:bg-white/5"
-              }`}
+              className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 px-4 py-2 rounded-lg transition-all text-sm font-medium"
             >
               {l.label}
             </a>
@@ -70,11 +49,7 @@ export function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className={`md:hidden p-2 rounded-lg transition-colors ${
-            scrolled
-              ? "text-slate-700 hover:bg-slate-100"
-              : "text-white hover:bg-white/10"
-          }`}
+          className="md:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
@@ -95,22 +70,14 @@ export function Navbar() {
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`md:hidden backdrop-blur-md border-b px-4 pb-4 ${
-            scrolled
-              ? "bg-white/98 border-slate-200"
-              : "bg-slate-950/98 border-slate-800/60"
-          }`}
+          className="md:hidden bg-white/98 backdrop-blur-md border-b border-slate-200 px-4 pb-4"
         >
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}
               href={l.href}
               onClick={() => setMenuOpen(false)}
-              className={`block py-3 border-b text-sm font-medium ${
-                scrolled
-                  ? "text-slate-600 hover:text-slate-900 border-slate-100"
-                  : "text-slate-300 hover:text-white border-slate-800/50"
-              }`}
+              className="block text-slate-600 hover:text-slate-900 py-3 border-b border-slate-100 text-sm font-medium"
             >
               {l.label}
             </a>
@@ -126,6 +93,6 @@ export function Navbar() {
           </a>
         </motion.div>
       )}
-    </motion.nav>
+    </nav>
   );
 }
