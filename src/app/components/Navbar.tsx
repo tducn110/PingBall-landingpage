@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 
 import { GOOGLE_FORM_URL } from "../constants";
+import vnukLogo from "../../imports/VNUK + ĐHĐN COLOR.png";
 
 const NAV_LINKS = [
   { label: "Thông tin", href: "#info" },
@@ -34,16 +35,13 @@ export function Navbar() {
 
       <div className="relative max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center group-hover:bg-orange-500/30 transition-colors">
-            <span className="text-base">🏓</span>
-          </div>
-          <div className="hidden sm:block">
-            <span className={`font-black tracking-tight text-sm transition-colors ${scrolled ? "text-white" : "text-white"}`}>
-              VNUK
-            </span>
-            <span className="text-orange-400 font-black text-sm ml-1.5">2026</span>
-          </div>
+        <a href="#" className="flex items-center group">
+          <img
+            src={vnukLogo}
+            alt="VNUK Đại Học Đà Nẵng"
+            className="h-8 w-auto"
+          />
+          <span className="hidden sm:inline text-orange-400 font-black text-sm ml-2">2026</span>
         </a>
 
         {/* Desktop links */}
