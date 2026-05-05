@@ -12,7 +12,7 @@ export function RegistrationCTA() {
           <SectionHeader
             eyebrow="Tham gia ngay"
             title="Đăng ký Tham dự"
-            subtitle="Quét mã QR hoặc bấm nút bên dưới để đăng ký qua Google Form. Hoàn toàn miễn phí — chỉ mất 2 phút!"
+            subtitle="Quét mã QR hoặc bấm nút bên dưới để đăng ký qua Google Form. Sau khi đăng ký, vui lòng chuyển khoản lệ phí 25,000 VNĐ/người."
           />
         </FadeInView>
 
@@ -57,7 +57,7 @@ export function RegistrationCTA() {
                 href={GOOGLE_FORM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white px-10 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-orange-500/30 hover:shadow-orange-400/40 hover:-translate-y-1"
+                className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white px-6 sm:px-10 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-orange-500/30 hover:shadow-orange-400/40 hover:-translate-y-1"
               >
                 <span className="text-lg">🏓</span>
                 <span className="font-black tracking-wide text-lg">ĐĂNG KÝ NGAY</span>

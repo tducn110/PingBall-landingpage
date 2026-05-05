@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { FadeInView } from "./ui/FadeInView";
 import { SectionHeader } from "./ui/SectionHeader";
-import { Lock, Unlock, Trophy, X, Shield, Check, RefreshCw, Edit3, Loader2 } from "lucide-react";
+import { Lock, Unlock, Trophy, X, Shield, Check, RefreshCw, Edit3, Loader2, Swords } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useTeams } from "../../hooks/useTeams";
 import { useMatches } from "../../hooks/useMatches";
@@ -137,9 +137,75 @@ export function Standings() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
-  const [adminTab, setAdminTab] = useState<"teams" | "matches">("matches");
+  const [adminTab, setAdminTab] = useState<"teams" | "matches" | "ko">("matches");
   const [savedFlash, setSavedFlash] = useState(false);
   const [localTeams, setLocalTeams] = useState(INITIAL_DATA);
+
+  // ── Knockout bracket local state ─────────────────────────────────────────
+  const [knockout, setKnockout] = useState<{
+    quarterFinals: { team1: string; team2: string; winner: string | null }[];
+    semiFinals: { team1: string; team2: string; winner: string | null }[];
+    final: { team1: string; team2: string; winner: string | null };
+    champion: string | null;
+  }>(() => {
+    try {
+      const saved = localStorage.getItem("pingball_knockout");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      quarterFinals: [
+        { team1: "Nhất A", team2: "Nhì B", winner: null },
+        { team1: "Nhất B", team2: "Nhì A", winner: null },
+        { team1: "Nhất C", team2: "Nhì D", winner: null },
+        { team1: "Nhất D", team2: "Nhì C", winner: null },
+      ],
+      semiFinals: [
+        { team1: "Thắng TK 1", team2: "Thắng TK 2", winner: null },
+        { team1: "Thắng TK 3", team2: "Thắng TK 4", winner: null },
+      ],
+      final: { team1: "Thắng BK 1", team2: "Thắng BK 2", winner: null },
+      champion: null,
+    };
+  });
+
+  function saveKnockout(next: typeof knockout) {
+    setKnockout(next);
+    localStorage.setItem("pingball_knockout", JSON.stringify(next));
+    setSavedFlash(true);
+    setTimeout(() => setSavedFlash(false), 1800);
+  }
+
+  function setKnockoutWinner(
+    round: "quarterFinals" | "semiFinals" | "final",
+    idx: number,
+    winner: string | null,
+  ) {
+    const next = { ...knockout };
+    if (round === "final") {
+      next.final = { ...next.final, winner };
+      next.champion = winner;
+    } else {
+      const matches = [...next[round]];
+      matches[idx] = { ...matches[idx], winner };
+      (next as any)[round] = matches;
+
+      // Propagate to next round
+      if (round === "quarterFinals") {
+        const w0 = matches[0].winner;
+        const w1 = matches[1].winner;
+        const w2 = matches[2].winner;
+        const w3 = matches[3].winner;
+        next.semiFinals[0] = { ...next.semiFinals[0], team1: w0 ?? "Thắng TK 1", team2: w1 ?? "Thắng TK 2" };
+        next.semiFinals[1] = { ...next.semiFinals[1], team1: w2 ?? "Thắng TK 3", team2: w3 ?? "Thắng TK 4" };
+      }
+      if (round === "semiFinals") {
+        const sf0 = matches[0].winner;
+        const sf1 = matches[1].winner;
+        next.final = { ...next.final, team1: sf0 ?? "Thắng BK 1", team2: sf1 ?? "Thắng BK 2" };
+      }
+    }
+    saveKnockout(next);
+  }
 
   // Merge Supabase data into group data format
   const groupData: GroupData =
@@ -397,6 +463,87 @@ export function Standings() {
           )}
         </AnimatePresence>
 
+        {/* ── Knockout Bracket ──────────────────────────────────────────────── */}
+        <FadeInView delay={0.2}>
+          <div className="mt-12 bg-slate-900 border border-slate-800/60 rounded-2xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-800/60 flex items-center gap-2">
+              <Swords className="w-4 h-4 text-orange-400" />
+              <span className="text-white font-bold text-sm">Vòng Knockout</span>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Tứ Kết */}
+                <div>
+                  <h4 className="text-orange-400 font-black text-sm mb-4 text-center">TỨ KẾT</h4>
+                  <div className="space-y-3">
+                    {knockout.quarterFinals.map((m, i) => (
+                      <div key={i} className="bg-slate-800/60 border border-slate-700/40 rounded-xl p-3">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className={m.winner === m.team1 ? "text-green-400 font-bold" : "text-slate-300"}>{m.team1}</span>
+                          <span className="text-slate-600 font-black mx-2">vs</span>
+                          <span className={m.winner === m.team2 ? "text-green-400 font-bold" : "text-slate-300"}>{m.team2}</span>
+                        </div>
+                        {m.winner ? (
+                          <p className="text-green-400 text-xs mt-1 text-center">{m.winner} 🏆</p>
+                        ) : (
+                          <p className="text-slate-600 text-xs mt-1 text-center">— Chưa có kết quả</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bán Kết */}
+                <div className="flex flex-col justify-center">
+                  <h4 className="text-orange-400 font-black text-sm mb-4 text-center">BÁN KẾT</h4>
+                  <div className="space-y-3">
+                    {knockout.semiFinals.map((m, i) => (
+                      <div key={i} className="bg-slate-800/60 border border-slate-700/40 rounded-xl p-3">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className={m.winner === m.team1 ? "text-green-400 font-bold" : "text-slate-300"}>{m.team1}</span>
+                          <span className="text-slate-600 font-black mx-2">vs</span>
+                          <span className={m.winner === m.team2 ? "text-green-400 font-bold" : "text-slate-300"}>{m.team2}</span>
+                        </div>
+                        {m.winner ? (
+                          <p className="text-green-400 text-xs mt-1 text-center">{m.winner} 🏆</p>
+                        ) : (
+                          <p className="text-slate-600 text-xs mt-1 text-center">— Chưa có kết quả</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Chung Kết */}
+                <div className="flex flex-col justify-center">
+                  <h4 className="text-yellow-400 font-black text-sm mb-4 text-center">CHUNG KẾT</h4>
+                  <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/5 border border-yellow-500/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className={knockout.final.winner === knockout.final.team1 ? "text-green-400 font-bold" : "text-slate-200"}>{knockout.final.team1}</span>
+                      <span className="text-slate-600 font-black mx-3">vs</span>
+                      <span className={knockout.final.winner === knockout.final.team2 ? "text-green-400 font-bold" : "text-slate-200"}>{knockout.final.team2}</span>
+                    </div>
+                    {knockout.final.winner ? (
+                      <p className="text-green-400 text-sm mt-2 text-center font-black">{knockout.final.winner} 🏆</p>
+                    ) : (
+                      <p className="text-slate-600 text-xs mt-2 text-center">— Chưa có kết quả</p>
+                    )}
+                    {knockout.champion && (
+                      <div className="mt-3 pt-3 border-t border-yellow-500/20 text-center">
+                        <p className="text-yellow-400 text-lg font-black flex items-center justify-center gap-2">
+                          <Trophy className="w-5 h-5" />
+                          {knockout.champion}
+                        </p>
+                        <p className="text-yellow-500/70 text-xs mt-1">VÔ ĐỊCH</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </FadeInView>
+
         {/* ── Admin Panel ─────────────────────────────────────────────────────── */}
         <FadeInView delay={0.3}>
           <div className="mt-10">
@@ -462,8 +609,8 @@ export function Standings() {
                   </div>
 
                   {/* Admin Tabs */}
-                  <div className="flex gap-1 mb-6 bg-slate-800/50 p-1 rounded-xl w-fit">
-                    {(["matches", "teams"] as const).map((tab) => (
+                  <div className="flex gap-1 mb-6 bg-slate-800/50 p-1 rounded-xl w-fit flex-wrap">
+                    {(["matches", "teams", "ko"] as const).map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setAdminTab(tab)}
@@ -473,7 +620,7 @@ export function Standings() {
                             : "text-slate-500 hover:text-slate-300"
                         }`}
                       >
-                        {tab === "matches" ? "⚡ Kết quả trận đấu" : "✏️ Tên đội"}
+                        {tab === "matches" ? "⚡ Kết quả trận đấu" : tab === "teams" ? "✏️ Tên đội" : "🏆 Knockout"}
                       </button>
                     ))}
                   </div>
@@ -567,6 +714,220 @@ export function Standings() {
                           />
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {/* Tab: Knockout Bracket */}
+                  {adminTab === "ko" && (
+                    <div className="space-y-6">
+                      <p className="text-slate-500 text-xs">
+                        Cập nhật kết quả vòng loại trực tiếp. Tứ Kết → Bán Kết → Chung Kết.
+                      </p>
+
+                      {/* Quarter Finals */}
+                      <div>
+                        <h4 className="text-orange-400 font-bold text-sm mb-3">TỨ KẾT</h4>
+                        <div className="space-y-3">
+                          {knockout.quarterFinals.map((m, i) => (
+                            <div key={i} className="bg-slate-800/50 border border-slate-700/40 rounded-xl p-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                <button
+                                  onClick={() => setKnockoutWinner("quarterFinals", i, m.team1)}
+                                  className={`p-3 rounded-xl border text-sm font-medium text-left transition-all ${
+                                    m.winner === m.team1
+                                      ? "border-green-500 bg-green-500/15 text-green-400"
+                                      : "border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800"
+                                  }`}
+                                >
+                                  {m.winner === m.team1 && <span className="mr-1">🏆</span>}
+                                  {m.team1}
+                                </button>
+                                <button
+                                  onClick={() => setKnockoutWinner("quarterFinals", i, m.team2)}
+                                  className={`p-3 rounded-xl border text-sm font-medium text-left transition-all ${
+                                    m.winner === m.team2
+                                      ? "border-green-500 bg-green-500/15 text-green-400"
+                                      : "border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800"
+                                  }`}
+                                >
+                                  {m.winner === m.team2 && <span className="mr-1">🏆</span>}
+                                  {m.team2}
+                                </button>
+                              </div>
+                              {m.winner && (
+                                <button
+                                  onClick={() => setKnockoutWinner("quarterFinals", i, null)}
+                                  className="text-xs text-slate-600 hover:text-red-400 mt-2 flex items-center gap-1 transition-colors"
+                                >
+                                  <X className="w-3 h-3" /> Xóa kết quả
+                                </button>
+                              )}
+                              <div className="mt-2 flex gap-4">
+                                <input
+                                  type="text"
+                                  value={m.team1}
+                                  onChange={(e) => {
+                                    const next = { ...knockout };
+                                    const qf = [...next.quarterFinals];
+                                    qf[i] = { ...qf[i], team1: e.target.value };
+                                    next.quarterFinals = qf;
+                                    setKnockout(next);
+                                  }}
+                                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-orange-500/60"
+                                  placeholder="Đội 1"
+                                />
+                                <input
+                                  type="text"
+                                  value={m.team2}
+                                  onChange={(e) => {
+                                    const next = { ...knockout };
+                                    const qf = [...next.quarterFinals];
+                                    qf[i] = { ...qf[i], team2: e.target.value };
+                                    next.quarterFinals = qf;
+                                    setKnockout(next);
+                                  }}
+                                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-orange-500/60"
+                                  placeholder="Đội 2"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Semi Finals */}
+                      <div>
+                        <h4 className="text-orange-400 font-bold text-sm mb-3">BÁN KẾT</h4>
+                        <div className="space-y-3">
+                          {knockout.semiFinals.map((m, i) => (
+                            <div key={i} className="bg-slate-800/50 border border-slate-700/40 rounded-xl p-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                <button
+                                  onClick={() => setKnockoutWinner("semiFinals", i, m.team1)}
+                                  className={`p-3 rounded-xl border text-sm font-medium text-left transition-all ${
+                                    m.winner === m.team1
+                                      ? "border-green-500 bg-green-500/15 text-green-400"
+                                      : "border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800"
+                                  }`}
+                                >
+                                  {m.winner === m.team1 && <span className="mr-1">🏆</span>}
+                                  {m.team1}
+                                </button>
+                                <button
+                                  onClick={() => setKnockoutWinner("semiFinals", i, m.team2)}
+                                  className={`p-3 rounded-xl border text-sm font-medium text-left transition-all ${
+                                    m.winner === m.team2
+                                      ? "border-green-500 bg-green-500/15 text-green-400"
+                                      : "border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800"
+                                  }`}
+                                >
+                                  {m.winner === m.team2 && <span className="mr-1">🏆</span>}
+                                  {m.team2}
+                                </button>
+                              </div>
+                              {m.winner && (
+                                <button
+                                  onClick={() => setKnockoutWinner("semiFinals", i, null)}
+                                  className="text-xs text-slate-600 hover:text-red-400 mt-2 flex items-center gap-1 transition-colors"
+                                >
+                                  <X className="w-3 h-3" /> Xóa kết quả
+                                </button>
+                              )}
+                              <div className="mt-2 flex gap-4">
+                                <input
+                                  type="text"
+                                  value={m.team1}
+                                  onChange={(e) => {
+                                    const next = { ...knockout };
+                                    const sf = [...next.semiFinals];
+                                    sf[i] = { ...sf[i], team1: e.target.value };
+                                    next.semiFinals = sf;
+                                    setKnockout(next);
+                                  }}
+                                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-orange-500/60"
+                                  placeholder="Đội 1"
+                                />
+                                <input
+                                  type="text"
+                                  value={m.team2}
+                                  onChange={(e) => {
+                                    const next = { ...knockout };
+                                    const sf = [...next.semiFinals];
+                                    sf[i] = { ...sf[i], team2: e.target.value };
+                                    next.semiFinals = sf;
+                                    setKnockout(next);
+                                  }}
+                                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-orange-500/60"
+                                  placeholder="Đội 2"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Final */}
+                      <div>
+                        <h4 className="text-yellow-400 font-bold text-sm mb-3">CHUNG KẾT</h4>
+                        <div className="bg-yellow-500/5 border border-yellow-500/30 rounded-xl p-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <button
+                              onClick={() => setKnockoutWinner("final", 0, knockout.final.team1)}
+                              className={`p-3 rounded-xl border text-sm font-medium text-left transition-all ${
+                                knockout.final.winner === knockout.final.team1
+                                  ? "border-green-500 bg-green-500/15 text-green-400"
+                                  : "border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800"
+                              }`}
+                            >
+                              {knockout.final.winner === knockout.final.team1 && <span className="mr-1">🏆</span>}
+                              {knockout.final.team1}
+                            </button>
+                            <button
+                              onClick={() => setKnockoutWinner("final", 0, knockout.final.team2)}
+                              className={`p-3 rounded-xl border text-sm font-medium text-left transition-all ${
+                                knockout.final.winner === knockout.final.team2
+                                  ? "border-green-500 bg-green-500/15 text-green-400"
+                                  : "border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800"
+                              }`}
+                            >
+                              {knockout.final.winner === knockout.final.team2 && <span className="mr-1">🏆</span>}
+                              {knockout.final.team2}
+                            </button>
+                          </div>
+                          {knockout.final.winner && (
+                            <button
+                              onClick={() => setKnockoutWinner("final", 0, null)}
+                              className="text-xs text-slate-600 hover:text-red-400 mt-2 flex items-center gap-1 transition-colors"
+                            >
+                              <X className="w-3 h-3" /> Xóa kết quả
+                            </button>
+                          )}
+                          <div className="mt-2 flex gap-4">
+                            <input
+                              type="text"
+                              value={knockout.final.team1}
+                              onChange={(e) => {
+                                const next = { ...knockout };
+                                next.final = { ...next.final, team1: e.target.value };
+                                setKnockout(next);
+                              }}
+                              className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-orange-500/60"
+                              placeholder="Đội 1"
+                            />
+                            <input
+                              type="text"
+                              value={knockout.final.team2}
+                              onChange={(e) => {
+                                const next = { ...knockout };
+                                next.final = { ...next.final, team2: e.target.value };
+                                setKnockout(next);
+                              }}
+                              className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-orange-500/60"
+                              placeholder="Đội 2"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
