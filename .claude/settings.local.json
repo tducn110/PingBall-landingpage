@@ -26,7 +26,17 @@
       "Bash(git init:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(printf '%s\\\\n' 'https://fwujartttltlmtojybuz.supabase.co')",
+      "Bash(git:*)",
+      "Bash(vercel:*)",
+      "Bash(npm i:*)",
+      "Bash(GIT_SEQUENCE_EDITOR=\"sed -i 's/^pick/edit/'\" git rebase -i --root)",
+      "Bash(GIT_COMMITTER_EMAIL=\"duc.nguyen240205@vnuk.edu.vn\" GIT_COMMITTER_NAME=\"tducn\" GIT_AUTHOR_EMAIL=\"duc.nguyen240205@vnuk.edu.vn\" GIT_AUTHOR_NAME=\"tducn\" git commit --amend --no-edit)",
+      "Bash(GIT_COMMITTER_EMAIL=\"duc.nguyen240205@vnuk.edu.vn\" GIT_COMMITTER_NAME=\"tducn\" GIT_AUTHOR_EMAIL=\"duc.nguyen240205@vnuk.edu.vn\" GIT_AUTHOR_NAME=\"tducn\" git commit -m \"Initial commit\")",
+      "Bash(gh api:*)",
+      "Bash(gh auth:*)",
+      "Bash(GIT_COMMITTER_EMAIL=\"duc.nguyen240205@vnuk.edu.vn\" GIT_COMMITTER_NAME=\"tducn\" GIT_AUTHOR_EMAIL=\"duc.nguyen240205@vnuk.edu.vn\" GIT_AUTHOR_NAME=\"tducn\" git commit --allow-empty -m \"$\\(cat <<'EOF'\nSquash: Landing page for PingBall tournament\n\nCo-Authored-By: tducn <duc.nguyen240205@vnuk.edu.vn>\nEOF\n\\)\")"
     ]
   }
 }

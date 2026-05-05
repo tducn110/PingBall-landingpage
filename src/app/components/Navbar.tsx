@@ -35,13 +35,12 @@ export function Navbar() {
 
       <div className="relative max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="flex items-center group">
+        <a href="#" className="flex-shrink-0">
           <img
             src={vnukLogo}
             alt="VNUK Đại Học Đà Nẵng"
             className="h-8 w-auto"
           />
-          <span className="hidden sm:inline text-orange-400 font-black text-sm ml-2">2026</span>
         </a>
 
         {/* Desktop links */}

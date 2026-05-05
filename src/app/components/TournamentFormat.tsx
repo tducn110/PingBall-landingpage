@@ -12,7 +12,7 @@ export function TournamentFormat() {
         <FadeInView>
           <SectionHeader
             eyebrow="Thể thức thi đấu"
-            title="Cách thức vận hành giải đấu"
+            title="CÁCH THỨC VẬN HÀNH"
             subtitle={
               `Giải đấu sử dụng hệ thống Double-Elimination theo bảng — không cần chỉ số phụ, minh bạch và công bằng tuyệt đối.`
             }

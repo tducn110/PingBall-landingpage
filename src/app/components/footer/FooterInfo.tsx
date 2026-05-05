@@ -25,7 +25,7 @@ export function FooterInfo() {
       <div className="hidden sm:block w-px bg-slate-800" />
       <FooterInfoItem label="Địa điểm" primary="158A Lê Lợi" secondary="Hải Châu, Đà Nẵng" />
       <div className="hidden sm:block w-px bg-slate-800" />
-      <FooterInfoItem label="Lệ phí" primary="50,000 VNĐ" secondary="Mỗi đôi" primaryColor="text-orange-400" />
+      <FooterInfoItem label="Lệ phí" primary="25,000 VNĐ" secondary="Mỗi người" primaryColor="text-orange-400" />
     </div>
   );
 }
