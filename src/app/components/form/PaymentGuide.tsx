@@ -13,7 +13,7 @@ export function PaymentGuide() {
         Hướng dẫn nộp lệ phí
       </h3>
       <p className="text-slate-300 text-sm mb-3">
-        Chuyển khoản <strong className="text-white">50,000 VNĐ</strong> vào:
+        Chuyển khoản <strong className="text-white">25,000 VNĐ</strong> vào:
       </p>
       <div className="bg-slate-800/60 rounded-xl px-4 py-3 font-mono text-sm space-y-1">
         <p>
