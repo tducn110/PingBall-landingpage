@@ -30,7 +30,7 @@ export function VenueBanner() {
             158A Lê Lợi, Hải Châu, Đà Nẵng
           </p>
           <p className="text-slate-400 mt-2 text-sm">
-            BTC sẽ thông báo thêm chi tiết phòng / sân trước ngày thi đấu.
+            BTC phục vụ trái cây + nước điện giải trong suốt thời gian thi đấu.
           </p>
         </div>
 

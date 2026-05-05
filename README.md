@@ -1,11 +1,55 @@
+# PingBall - Landing Page
 
-  # Landing page for tournament (Community)
+Landing page giới thiệu giải đấu PingBall.
 
-  This is a code bundle for Landing page for tournament (Community). The original project is available at https://www.figma.com/design/LCIMXzqua9A2N2WzEuPU4T/Landing-page-for-tournament--Community-.
+## Công nghệ
 
-  ## Running the code
+- **React 18** + **TypeScript**
+- **Vite** (build tool)
+- **Tailwind CSS v4**
+- **shadcn/ui** (Radix UI components)
+- **pnpm** (package manager)
 
-  Run `npm i` to install the dependencies.
+## Cài đặt
 
-  Run `npm run dev` to start the development server.
-  
+```bash
+pnpm install
+```
+
+## Chạy dev server
+
+```bash
+pnpm dev
+```
+
+Mặc định chạy tại `http://localhost:5173`.
+
+## Build production
+
+```bash
+pnpm build
+```
+
+Output tại thư mục `dist/`.
+
+## Cấu trúc dự án
+
+```
+src/
+├── app/
+│   ├── App.tsx            # Entry point
+│   ├── components/        # UI components
+│   │   ├── hero/          # Hero section
+│   │   ├── ui/            # shadcn/ui components
+│   │   ├── Figma/         # Figma image components
+│   │   ├── format/        # Tournament format
+│   │   ├── form/          # Registration form
+│   │   ├── info/          # Tournament info
+│   │   └── footer/        # Footer
+│   └── constants.ts
+├── lib/                   # Utilities, config
+├── api/                   # API layer (Supabase)
+├── hooks/                 # React hooks
+├── types/                 # TypeScript types
+└── main.tsx              # App entry
+```
