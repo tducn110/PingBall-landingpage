@@ -29,7 +29,7 @@ export function Navbar() {
     >
       {/* Animated background */}
       <motion.div
-        className="absolute inset-0 bg-slate-950 border-b border-slate-800/60 backdrop-blur-md"
+        className="absolute inset-0 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm"
         style={{ opacity: bgOpacity }}
       />
 
@@ -50,7 +50,11 @@ export function Navbar() {
             <a
               key={l.href}
               href={l.href}
-              className="text-slate-300 hover:text-white px-4 py-2 rounded-lg hover:bg-white/5 transition-all text-sm font-medium"
+              className={`px-4 py-2 rounded-lg transition-all text-sm font-medium ${
+                scrolled
+                  ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  : "text-slate-300 hover:text-white hover:bg-white/5"
+              }`}
             >
               {l.label}
             </a>
@@ -67,7 +71,11 @@ export function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className={`md:hidden p-2 rounded-lg transition-colors ${
+            scrolled
+              ? "text-slate-700 hover:bg-slate-100"
+              : "text-white hover:bg-white/10"
+          }`}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
@@ -88,14 +96,22 @@ export function Navbar() {
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="md:hidden bg-slate-950/98 backdrop-blur-md border-b border-slate-800/60 px-4 pb-4"
+          className={`md:hidden backdrop-blur-md border-b px-4 pb-4 ${
+            scrolled
+              ? "bg-white/98 border-slate-200"
+              : "bg-slate-950/98 border-slate-800/60"
+          }`}
         >
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}
               href={l.href}
               onClick={() => setMenuOpen(false)}
-              className="block text-slate-300 hover:text-white py-3 border-b border-slate-800/50 text-sm font-medium"
+              className={`block py-3 border-b text-sm font-medium ${
+                scrolled
+                  ? "text-slate-600 hover:text-slate-900 border-slate-100"
+                  : "text-slate-300 hover:text-white border-slate-800/50"
+              }`}
             >
               {l.label}
             </a>
