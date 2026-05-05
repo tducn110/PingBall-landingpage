@@ -4,15 +4,13 @@ import { FooterInfo } from "./footer/FooterInfo";
 export function Footer() {
   return (
     <footer className="bg-slate-950 border-t border-slate-800/60 py-12">
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto pl-2 pr-4">
         <div className="flex flex-col md:flex-row items-center md:items-center md:justify-between gap-8">
-          <div className="md:flex-shrink-0">
-            <FooterBrand />
-          </div>
+          <FooterBrand />
           <div className="flex-1 flex justify-center">
             <FooterInfo />
           </div>
-          <div className="md:flex-shrink-0" />
+          <div className="hidden md:block" />
         </div>
         <div className="mt-10 pt-6 border-t border-slate-800/60 flex flex-col items-center gap-2">
           <p className="text-slate-600 text-xs">
